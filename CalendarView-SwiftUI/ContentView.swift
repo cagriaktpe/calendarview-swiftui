@@ -20,14 +20,6 @@ struct ContentView: View {
 
     var body: some View {
         VStack {
-            Text("Calendar")
-                .font(.title)
-                .fontWeight(.bold)
-
-            Rectangle()
-                .frame(height: 1)
-                .foregroundColor(.gray)
-
             VStack(spacing: 20) {
                 HStack {
                     Button {
@@ -110,9 +102,9 @@ struct ContentView: View {
                         }
                     }
                     .opacity(showDatePicker ? 0 : 1)
+                    .frame(height: showDatePicker ? 0 : .infinity)
                     
                     // TODO: IMPLEMENT
-
                     HStack(spacing: 0) {
                         Picker("", selection: $selectedMonth) {
                             ForEach(0 ..< monthSymbols.count, id: \.self) { index in
@@ -130,7 +122,7 @@ struct ContentView: View {
                         }
                         .pickerStyle(.wheel)
                     }
-
+                    
                     .opacity(showDatePicker ? 1 : 0)
                 }
             }
