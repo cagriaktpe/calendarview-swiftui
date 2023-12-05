@@ -9,11 +9,14 @@ import SwiftUI
 
 struct ContentView: View {
     let days = ["SUN", "MON", "TUE", "WED", "THU", "FRI", "SAT"]
-    let months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "Octomber", "November", "December"]
-    
+
     @State private var selectedMonth = 0
+    @State private var selectedYear = 0
     @State private var selectedDate = Date()
     @State private var showDatePicker: Bool = false
+
+    let monthSymbols = Calendar.current.monthSymbols
+    let years = Array(Date().year ..< Date().year + 10)
 
     var body: some View {
         VStack {
@@ -87,7 +90,7 @@ struct ContentView: View {
                     }
                 }
                 .opacity(showDatePicker ? 0 : 1)
-                
+
                 ZStack {
                     LazyVGrid(columns: Array(repeating: GridItem(.flexible()), count: 7), spacing: 50) {
                         ForEach(fetchDates()) { value in
@@ -109,32 +112,27 @@ struct ContentView: View {
                     .opacity(showDatePicker ? 0 : 1)
                     
                     // TODO: IMPLEMENT
+
                     HStack(spacing: 0) {
-                        Picker("Months", selection: $selectedMonth) {
-                            ForEach(0 ..< months.count) {
-                                Text(months[$0])
-                            }
-                        }
-                        .padding(0)
-                        .pickerStyle(.wheel)
-                        
-                        Picker("Months", selection: $selectedMonth) {
-                            ForEach(0 ..< months.count) {
-                                Text(months[$0])
+                        Picker("", selection: $selectedMonth) {
+                            ForEach(0 ..< monthSymbols.count, id: \.self) { index in
+                                Text(monthSymbols[index])
+                                    .tag(index)
                             }
                         }
                         .pickerStyle(.wheel)
-                        .padding(0)
+
+                        Picker("", selection: $selectedYear) {
+                            ForEach(years, id: \.self) { year in
+                                Text(String(year))
+                                    .tag(year)
+                            }
+                        }
+                        .pickerStyle(.wheel)
                     }
+
                     .opacity(showDatePicker ? 1 : 0)
-                        
-                        
-                        
-                    
                 }
-                
-                
-                
             }
             .padding()
         }
@@ -185,6 +183,8 @@ struct CalendarDate: Identifiable, Hashable {
 }
 
 extension Date {
+    var year: Int { Calendar.current.component(.year, from: self) }
+
     func datesOfMonth() -> [Date] {
         let calendar = Calendar.current
         let currentMonth = calendar.component(.month, from: self)
