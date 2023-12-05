@@ -9,8 +9,11 @@ import SwiftUI
 
 struct ContentView: View {
     let days = ["SUN", "MON", "TUE", "WED", "THU", "FRI", "SAT"]
+    let months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "Octomber", "November", "December"]
+    
     @State private var selectedMonth = 0
     @State private var selectedDate = Date()
+    @State private var showDatePicker: Bool = false
 
     var body: some View {
         VStack {
@@ -23,11 +26,23 @@ struct ContentView: View {
                 .foregroundColor(.gray)
 
             VStack(spacing: 20) {
-                Text("Select a day")
-                    .font(.title2)
-                    .fontWeight(.semibold)
-
                 HStack {
+                    Button {
+                        showDatePicker.toggle()
+                    } label: {
+                        HStack {
+                            Text(selectedDate.monthAndYear())
+                                .font(.title3)
+                                .foregroundStyle(.black)
+                                .fontWeight(.semibold)
+
+                            Image(systemName: "chevron.right")
+                                .font(.callout)
+                                .fontWeight(.semibold)
+                                .foregroundStyle(.blue)
+                        }
+                    }
+
                     Spacer()
 
                     Button(action: {
@@ -37,17 +52,15 @@ struct ContentView: View {
 
                     }, label: {
                         Image(systemName: "chevron.left")
-                            .font(.largeTitle)
+                            .font(.title2)
+                            .fontWeight(.semibold)
                             .foregroundStyle(.blue)
 
                     })
+                    .opacity(showDatePicker ? 0 : 1)
 
                     Spacer()
-
-                    Text(selectedDate.monthAndYear())
-                        .font(.title2)
-
-                    Spacer()
+                        .frame(width: 28)
 
                     Button(action: {
                         withAnimation {
@@ -56,11 +69,11 @@ struct ContentView: View {
 
                     }, label: {
                         Image(systemName: "chevron.right")
-                            .font(.largeTitle)
+                            .font(.title2)
+                            .fontWeight(.semibold)
                             .foregroundStyle(.blue)
                     })
-
-                    Spacer()
+                    .opacity(showDatePicker ? 0 : 1)
                 }
 
                 HStack {
@@ -68,31 +81,60 @@ struct ContentView: View {
 
                         Text(day)
                             .font(.callout)
-                            .foregroundColor(.gray)
+                            .foregroundStyle(.gray.opacity(0.5))
                             .fontWeight(.medium)
                             .frame(maxWidth: .infinity)
                     }
                 }
-
-                LazyVGrid(columns: Array(repeating: GridItem(.flexible()), count: 7), spacing: 20) {
-                    ForEach(fetchDates()) { value in
-                        if value.day != 0 {
-                            Text("\(value.day)")
-                                .font(.title2)
-                                .fontWeight(.medium)
-                                .frame(maxWidth: .infinity)
-                                .foregroundColor(value.date.string() == Date().string() ? .blue : .black)
-                                
-                                
-                        } else {
-                            Text("")
-                                .font(.title2)
-                                .fontWeight(.medium)
-                                .frame(maxWidth: .infinity)
-                                .foregroundColor(.black)
+                .opacity(showDatePicker ? 0 : 1)
+                
+                ZStack {
+                    LazyVGrid(columns: Array(repeating: GridItem(.flexible()), count: 7), spacing: 50) {
+                        ForEach(fetchDates()) { value in
+                            if value.day != 0 {
+                                Text("\(value.day)")
+                                    .font(.title2)
+                                    .fontWeight(.medium)
+                                    .frame(maxWidth: .infinity)
+                                    .foregroundColor(value.date.string() == Date().string() ? .blue : .black)
+                            } else {
+                                Text("")
+                                    .font(.title2)
+                                    .fontWeight(.medium)
+                                    .frame(maxWidth: .infinity)
+                                    .foregroundColor(.black)
+                            }
                         }
                     }
+                    .opacity(showDatePicker ? 0 : 1)
+                    
+                    // TODO: IMPLEMENT
+                    HStack(spacing: 0) {
+                        Picker("Months", selection: $selectedMonth) {
+                            ForEach(0 ..< months.count) {
+                                Text(months[$0])
+                            }
+                        }
+                        .padding(0)
+                        .pickerStyle(.wheel)
+                        
+                        Picker("Months", selection: $selectedMonth) {
+                            ForEach(0 ..< months.count) {
+                                Text(months[$0])
+                            }
+                        }
+                        .pickerStyle(.wheel)
+                        .padding(0)
+                    }
+                    .opacity(showDatePicker ? 1 : 0)
+                        
+                        
+                        
+                    
                 }
+                
+                
+                
             }
             .padding()
         }
@@ -132,7 +174,7 @@ struct ContentView: View {
     }
 }
 
-struct CalendarDate: Identifiable {
+struct CalendarDate: Identifiable, Hashable {
     let id = UUID()
     var day: Int
     var date: Date
@@ -175,7 +217,7 @@ extension Date {
         dateFormatter.dateFormat = "MMMM yyyy"
         return dateFormatter.string(from: self)
     }
-    
+
     func string() -> String {
         let dateFormatter = DateFormatter()
         dateFormatter.dateFormat = "MM/dd/yyyy"
