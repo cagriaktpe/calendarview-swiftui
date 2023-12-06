@@ -11,32 +11,17 @@ struct ContentView: View {
     let days = ["SUN", "MON", "TUE", "WED", "THU", "FRI", "SAT"]
 
     @State private var selectedMonth = 0
-    @State private var selectedYear = 0
+    @State private var selectedYear = 2023
     @State private var selectedDate = Date()
-    @State private var showDatePicker: Bool = false
-
-    let monthSymbols = Calendar.current.monthSymbols
-    let years = Array(Date().year ..< Date().year + 10)
 
     var body: some View {
         VStack {
             VStack(spacing: 20) {
                 HStack {
-                    Button {
-                        showDatePicker.toggle()
-                    } label: {
-                        HStack {
-                            Text(selectedDate.monthAndYear())
-                                .font(.title3)
-                                .foregroundStyle(.black)
-                                .fontWeight(.semibold)
-
-                            Image(systemName: "chevron.right")
-                                .font(.callout)
-                                .fontWeight(.semibold)
-                                .foregroundStyle(.blue)
-                        }
-                    }
+                    Text(selectedDate.monthAndYear())
+                        .font(.title3)
+                        .foregroundStyle(.black)
+                        .fontWeight(.semibold)
 
                     Spacer()
 
@@ -52,7 +37,6 @@ struct ContentView: View {
                             .foregroundStyle(.blue)
 
                     })
-                    .opacity(showDatePicker ? 0 : 1)
 
                     Spacer()
                         .frame(width: 28)
@@ -68,7 +52,6 @@ struct ContentView: View {
                             .fontWeight(.semibold)
                             .foregroundStyle(.blue)
                     })
-                    .opacity(showDatePicker ? 0 : 1)
                 }
 
                 HStack {
@@ -81,7 +64,6 @@ struct ContentView: View {
                             .frame(maxWidth: .infinity)
                     }
                 }
-                .opacity(showDatePicker ? 0 : 1)
 
                 ZStack {
                     LazyVGrid(columns: Array(repeating: GridItem(.flexible()), count: 7), spacing: 50) {
@@ -101,33 +83,11 @@ struct ContentView: View {
                             }
                         }
                     }
-                    .opacity(showDatePicker ? 0 : 1)
-                    .frame(height: showDatePicker ? 0 : .infinity)
-                    
-                    // TODO: IMPLEMENT
-                    HStack(spacing: 0) {
-                        Picker("", selection: $selectedMonth) {
-                            ForEach(0 ..< monthSymbols.count, id: \.self) { index in
-                                Text(monthSymbols[index])
-                                    .tag(index)
-                            }
-                        }
-                        .pickerStyle(.wheel)
-
-                        Picker("", selection: $selectedYear) {
-                            ForEach(years, id: \.self) { year in
-                                Text(String(year))
-                                    .tag(year)
-                            }
-                        }
-                        .pickerStyle(.wheel)
-                    }
-                    
-                    .opacity(showDatePicker ? 1 : 0)
                 }
             }
             .padding()
         }
+
         .onChange(of: selectedMonth) { _, _ in
 
             selectedDate = fetchSelectedMonth()
