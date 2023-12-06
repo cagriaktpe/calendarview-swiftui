@@ -74,6 +74,18 @@ struct ContentView: View {
                                     .fontWeight(.medium)
                                     .frame(maxWidth: .infinity)
                                     .foregroundColor(value.date.string() == Date().string() ? .blue : .black)
+                                    .background ( value.day == 4 ?
+                                        Image(systemName: "person.fill")
+                                            .font(.title2)
+                                            .foregroundColor(.blue)
+                                            .offset(x: 0, y: 30) : nil
+                                    )
+                                    .background ( value.day == 3 ?
+                                        Image(systemName: "person.fill")
+                                            .font(.title2)
+                                            .foregroundColor(.blue)
+                                            .offset(x: 0, y: 30) : nil
+                                    )
                             } else {
                                 Text("")
                                     .font(.title2)
