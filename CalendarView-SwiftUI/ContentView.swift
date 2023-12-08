@@ -18,40 +18,45 @@ struct ContentView: View {
         VStack {
             VStack(spacing: 20) {
                 HStack {
+                    
+                    Button(action: {
+                        
+                            selectedMonth -= 1
+                        
+
+                    }, label: {
+                        Image(systemName: "chevron.left")
+                            .font(.title)
+                            .fontWeight(.semibold)
+                            .foregroundStyle(.blue)
+
+                    })
+                    .padding(.leading, 16)
+
+                    Spacer()
+                    
                     Text(selectedDate.monthAndYear())
-                        .font(.title3)
+                        .font(.title2)
                         .foregroundStyle(.black)
                         .fontWeight(.semibold)
 
                     Spacer()
+                        
 
                     Button(action: {
-                        withAnimation {
-                            selectedMonth -= 1
-                        }
-
-                    }, label: {
-                        Image(systemName: "chevron.left")
-                            .font(.title2)
-                            .fontWeight(.semibold)
-                            .foregroundStyle(.blue)
-
-                    })
-
-                    Spacer()
-                        .frame(width: 28)
-
-                    Button(action: {
-                        withAnimation {
+                        
                             selectedMonth += 1
-                        }
+                        
 
                     }, label: {
                         Image(systemName: "chevron.right")
-                            .font(.title2)
+                            .font(.title)
                             .fontWeight(.semibold)
                             .foregroundStyle(.blue)
                     })
+                    .padding(.trailing, 16)
+                    
+                    
                 }
 
                 HStack {
@@ -66,7 +71,7 @@ struct ContentView: View {
                 }
 
                 ZStack {
-                    LazyVGrid(columns: Array(repeating: GridItem(.flexible()), count: 7), spacing: 50) {
+                    LazyVGrid(columns: Array(repeating: GridItem(.flexible()), count: 7), spacing: 45) {
                         ForEach(fetchDates()) { value in
                             if value.day != 0 {
                                 Text("\(value.day)")
