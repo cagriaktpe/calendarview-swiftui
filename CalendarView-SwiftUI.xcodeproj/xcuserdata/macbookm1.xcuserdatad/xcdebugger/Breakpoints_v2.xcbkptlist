@@ -7,33 +7,49 @@
       <BreakpointProxy
          BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
          <BreakpointContent
-            uuid = "13669771-58BE-4423-8206-7CDC13CCE04B"
+            uuid = "5F1796CA-0FEB-4AC2-8AB1-753A61E6A586"
             shouldBeEnabled = "No"
             ignoreCount = "0"
             continueAfterRunningActions = "No"
             filePath = "CalendarView-SwiftUI/ContentView.swift"
             startingColumnNumber = "9223372036854775807"
             endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "106"
-            endingLineNumber = "106"
-            landmarkName = "fetchDates()"
+            startingLineNumber = "118"
+            endingLineNumber = "118"
+            landmarkName = "fetchDaysOfMonthDates(date:)"
             landmarkType = "7">
-         </BreakpointContent>
-      </BreakpointProxy>
-      <BreakpointProxy
-         BreakpointExtensionID = "Xcode.Breakpoint.FileBreakpoint">
-         <BreakpointContent
-            uuid = "A2F14FFE-3F02-489E-8325-63E2D185D05B"
-            shouldBeEnabled = "No"
-            ignoreCount = "0"
-            continueAfterRunningActions = "No"
-            filePath = "CalendarView-SwiftUI/ContentView.swift"
-            startingColumnNumber = "9223372036854775807"
-            endingColumnNumber = "9223372036854775807"
-            startingLineNumber = "127"
-            endingLineNumber = "127"
-            landmarkName = "fetchSelectedMonth()"
-            landmarkType = "7">
+            <Locations>
+               <Location
+                  uuid = "5F1796CA-0FEB-4AC2-8AB1-753A61E6A586 - e87f8790a659e4c2"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "CalendarView_SwiftUI.ContentView.fetchDaysOfMonthDates(date: Foundation.Date) -&gt; Swift.Array&lt;CalendarView_SwiftUI.CalendarDate&gt;"
+                  moduleName = "CalendarView-SwiftUI"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/macbookm1/Documents/GitHub/CalendarView-SwiftUI/CalendarView-SwiftUI/ContentView.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "119"
+                  endingLineNumber = "119"
+                  offsetFromSymbolStart = "712">
+               </Location>
+               <Location
+                  uuid = "5F1796CA-0FEB-4AC2-8AB1-753A61E6A586 - e87f8790a659e4c2"
+                  shouldBeEnabled = "Yes"
+                  ignoreCount = "0"
+                  continueAfterRunningActions = "No"
+                  symbolName = "CalendarView_SwiftUI.ContentView.fetchDaysOfMonthDates(date: Foundation.Date) -&gt; Swift.Array&lt;CalendarView_SwiftUI.CalendarDate&gt;"
+                  moduleName = "CalendarView-SwiftUI"
+                  usesParentBreakpointCondition = "Yes"
+                  urlString = "file:///Users/macbookm1/Documents/GitHub/CalendarView-SwiftUI/CalendarView-SwiftUI/ContentView.swift"
+                  startingColumnNumber = "9223372036854775807"
+                  endingColumnNumber = "9223372036854775807"
+                  startingLineNumber = "119"
+                  endingLineNumber = "119"
+                  offsetFromSymbolStart = "728">
+               </Location>
+            </Locations>
          </BreakpointContent>
       </BreakpointProxy>
    </Breakpoints>

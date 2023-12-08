@@ -10,16 +10,13 @@ import SwiftUI
 struct ContentView: View {
     let days = ["SUN", "MON", "TUE", "WED", "THU", "FRI", "SAT"]
 
-    @State private var selectedMonth = 0
-    @State private var selectedYear = 2023
     @State private var selectedDate = Date()
 
     var body: some View {
         VStack(spacing: 20) {
             HStack {
                 Button(action: {
-                    selectedMonth -= 1
-
+                    selectedDate = selectedDate.addMonth(-1)
                 }, label: {
                     Image(systemName: "chevron.left")
                         .font(.title)
@@ -39,8 +36,7 @@ struct ContentView: View {
                 Spacer()
 
                 Button(action: {
-                    selectedMonth += 1
-
+                    selectedDate = selectedDate.addMonth(1)
                 }, label: {
                     Image(systemName: "chevron.right")
                         .font(.title)
@@ -61,72 +57,92 @@ struct ContentView: View {
                 }
             }
 
-            LazyVGrid(columns: Array(repeating: GridItem(.flexible()), count: 7), spacing: 45) {
-                ForEach(fetchDates()) { value in
-                    if value.day != 0 {
-                        Text("\(value.day)")
-                            .font(.title2)
-                            .fontWeight(.medium)
-                            .frame(maxWidth: .infinity)
-                            .foregroundColor(value.date.string() == Date().string() ? .blue : .black)
-                            .background(value.day == 4 ?
-                                Image(systemName: "person.fill")
-                                .font(.title2)
-                                .foregroundColor(.blue)
-                                .offset(x: 0, y: 30) : nil
-                            )
-                            .background(value.day == 3 ?
-                                Image(systemName: "person.fill")
-                                .font(.title2)
-                                .foregroundColor(.blue)
-                                .offset(x: 0, y: 30) : nil
-                            )
-                    } else {
-                        Text("")
-                            .font(.title2)
-                            .fontWeight(.medium)
-                            .frame(maxWidth: .infinity)
-                            .foregroundColor(.black)
+            TabView(selection: $selectedDate) {
+                ForEach(getAllMonthBetweenToDates(dates: calcStartAndEndDate()), id: \.self) { date in
+                    LazyVGrid(columns: Array(repeating: GridItem(.flexible()), count: 7), spacing: 45) {
+                        ForEach(fetchDaysOfMonthDates(date: date), id: \.self) { calendarDate in
+                            if calendarDate.day == 0 {
+                                Text("")
+                                    .font(.title2)
+                                    .fontWeight(.medium)
+                                    .frame(maxWidth: .infinity)
+                                    .foregroundColor(.primary)
+                            } else {
+                                Text("\(calendarDate.day)")
+                                    .font(.title2)
+                                    .fontWeight(.medium)
+                                    .frame(maxWidth: .infinity)
+                                    .foregroundStyle(isSameDay(date: calendarDate.date) ? .blue : .primary)
+                            }
+                        }
                     }
+                    .tag(date)
                 }
             }
-        }
-        .onChange(of: selectedMonth) { _, _ in
-
-            selectedDate = fetchSelectedMonth()
+            .tabViewStyle(.page(indexDisplayMode: .never))
+            .frame(height: 450)
+            
         }
         .padding()
     }
 
-    
-
-    func fetchDates() -> [CalendarDate] {
+    func calcStartAndEndDate() -> [Date] {
         let calendar = Calendar.current
-        let currentMonth = fetchSelectedMonth()
 
-        var dates = currentMonth.datesOfMonth().map({ CalendarDate(day: calendar.component(.day, from: $0), date: $0) })
+        let threeMonthsAgo = calendar.date(byAdding: .month, value: -3, to: selectedDate)
+        let threeMonthsLater = calendar.date(byAdding: .month, value: 3, to: selectedDate)
 
-        let firstDayOfMonth = calendar.component(.weekday, from: dates.first?.date ?? Date())
-
-        for _ in 1 ..< firstDayOfMonth {
-            dates.insert(CalendarDate(day: 0, date: Date()), at: 0)
-        }
-
-        let lastDayOfMonth = calendar.component(.weekday, from: dates.last!.date)
-
-        for _ in lastDayOfMonth ..< 7 {
-            dates.append(CalendarDate(day: 0, date: Date()))
-        }
-
-        return dates
+        return [threeMonthsAgo!, threeMonthsLater!]
     }
 
-    func fetchSelectedMonth() -> Date {
+    func getAllMonthBetweenToDates(dates: [Date]) -> [Date] {
+        if dates.count != 2 {
+            return []
+        }
+
         let calendar = Calendar.current
+        let startDate = dates.first!
+        let endDate = dates.last!
 
-        let month = calendar.date(byAdding: .month, value: selectedMonth, to: Date())
+        var months: [Date] = []
+        var currentDate = startDate
 
-        return month!
+        while currentDate <= endDate {
+            months.append(currentDate)
+            currentDate = calendar.date(byAdding: .month, value: 1, to: currentDate)!
+        }
+
+        return months
+    }
+
+    func fetchDaysOfMonthDates(date: Date) -> [CalendarDate] {
+        let calendar = Calendar.current
+        let dates = date.datesOfMonth()
+        let firstDay = calendar.component(.weekday, from: dates.first!)
+        let lastDay = calendar.component(.weekday, from: dates.last!)
+
+        var calendarDates: [CalendarDate] = []
+
+        for _ in 1 ..< firstDay {
+            calendarDates.append(CalendarDate(day: 0, date: dates.first!))
+        }
+
+        for date in dates {
+            calendarDates.append(CalendarDate(day: calendar.component(.day, from: date), date: date))
+        }
+
+        for _ in lastDay ..< 7 {
+            calendarDates.append(CalendarDate(day: 0, date: dates.last!))
+        }
+        
+        print(calendarDates)
+        
+        return calendarDates
+    }
+
+    func isSameDay(date: Date) -> Bool {
+        let calendar = Calendar.current
+        return calendar.isDate(date, equalTo: .now, toGranularity: .day) && calendar.isDate(date, equalTo: .now, toGranularity: .month) && calendar.isDate(date, equalTo: .now, toGranularity: .year)
     }
 }
 
@@ -180,5 +196,12 @@ extension Date {
         let dateFormatter = DateFormatter()
         dateFormatter.dateFormat = "MM/dd/yyyy"
         return dateFormatter.string(from: self)
+    }
+
+    func addMonth(_ month: Int) -> Date {
+        let calendar = Calendar.current
+        var dateComponents = DateComponents()
+        dateComponents.month = month
+        return calendar.date(byAdding: dateComponents, to: self)!
     }
 }
