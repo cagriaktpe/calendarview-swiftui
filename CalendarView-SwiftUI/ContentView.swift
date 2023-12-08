@@ -15,101 +15,90 @@ struct ContentView: View {
     @State private var selectedDate = Date()
 
     var body: some View {
-        VStack {
-            VStack(spacing: 20) {
-                HStack {
-                    
-                    Button(action: {
-                        
-                            selectedMonth -= 1
-                        
+        VStack(spacing: 20) {
+            HStack {
+                Button(action: {
+                    selectedMonth -= 1
 
-                    }, label: {
-                        Image(systemName: "chevron.left")
-                            .font(.title)
-                            .fontWeight(.semibold)
-                            .foregroundStyle(.blue)
-
-                    })
-                    .padding(.leading, 16)
-
-                    Spacer()
-                    
-                    Text(selectedDate.monthAndYear())
-                        .font(.title2)
-                        .foregroundStyle(.black)
+                }, label: {
+                    Image(systemName: "chevron.left")
+                        .font(.title)
                         .fontWeight(.semibold)
+                        .foregroundStyle(.blue)
 
-                    Spacer()
-                        
+                })
+                .padding(.leading, 16)
 
-                    Button(action: {
-                        
-                            selectedMonth += 1
-                        
+                Spacer()
 
-                    }, label: {
-                        Image(systemName: "chevron.right")
-                            .font(.title)
-                            .fontWeight(.semibold)
-                            .foregroundStyle(.blue)
-                    })
-                    .padding(.trailing, 16)
-                    
-                    
+                Text(selectedDate.monthAndYear())
+                    .font(.title2)
+                    .foregroundStyle(.black)
+                    .fontWeight(.semibold)
+
+                Spacer()
+
+                Button(action: {
+                    selectedMonth += 1
+
+                }, label: {
+                    Image(systemName: "chevron.right")
+                        .font(.title)
+                        .fontWeight(.semibold)
+                        .foregroundStyle(.blue)
+                })
+                .padding(.trailing, 16)
+            }
+
+            HStack {
+                ForEach(days, id: \.self) { day in
+
+                    Text(day)
+                        .font(.callout)
+                        .foregroundStyle(.gray.opacity(0.5))
+                        .fontWeight(.medium)
+                        .frame(maxWidth: .infinity)
                 }
+            }
 
-                HStack {
-                    ForEach(days, id: \.self) { day in
-
-                        Text(day)
-                            .font(.callout)
-                            .foregroundStyle(.gray.opacity(0.5))
+            LazyVGrid(columns: Array(repeating: GridItem(.flexible()), count: 7), spacing: 45) {
+                ForEach(fetchDates()) { value in
+                    if value.day != 0 {
+                        Text("\(value.day)")
+                            .font(.title2)
                             .fontWeight(.medium)
                             .frame(maxWidth: .infinity)
-                    }
-                }
-
-                ZStack {
-                    LazyVGrid(columns: Array(repeating: GridItem(.flexible()), count: 7), spacing: 45) {
-                        ForEach(fetchDates()) { value in
-                            if value.day != 0 {
-                                Text("\(value.day)")
-                                    .font(.title2)
-                                    .fontWeight(.medium)
-                                    .frame(maxWidth: .infinity)
-                                    .foregroundColor(value.date.string() == Date().string() ? .blue : .black)
-                                    .background ( value.day == 4 ?
-                                        Image(systemName: "person.fill")
-                                            .font(.title2)
-                                            .foregroundColor(.blue)
-                                            .offset(x: 0, y: 30) : nil
-                                    )
-                                    .background ( value.day == 3 ?
-                                        Image(systemName: "person.fill")
-                                            .font(.title2)
-                                            .foregroundColor(.blue)
-                                            .offset(x: 0, y: 30) : nil
-                                    )
-                            } else {
-                                Text("")
-                                    .font(.title2)
-                                    .fontWeight(.medium)
-                                    .frame(maxWidth: .infinity)
-                                    .foregroundColor(.black)
-                            }
-                        }
+                            .foregroundColor(value.date.string() == Date().string() ? .blue : .black)
+                            .background(value.day == 4 ?
+                                Image(systemName: "person.fill")
+                                .font(.title2)
+                                .foregroundColor(.blue)
+                                .offset(x: 0, y: 30) : nil
+                            )
+                            .background(value.day == 3 ?
+                                Image(systemName: "person.fill")
+                                .font(.title2)
+                                .foregroundColor(.blue)
+                                .offset(x: 0, y: 30) : nil
+                            )
+                    } else {
+                        Text("")
+                            .font(.title2)
+                            .fontWeight(.medium)
+                            .frame(maxWidth: .infinity)
+                            .foregroundColor(.black)
                     }
                 }
             }
-            .padding()
         }
-
         .onChange(of: selectedMonth) { _, _ in
 
             selectedDate = fetchSelectedMonth()
         }
+        .padding()
     }
+
+    
 
     func fetchDates() -> [CalendarDate] {
         let calendar = Calendar.current
