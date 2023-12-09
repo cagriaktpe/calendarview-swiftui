@@ -58,49 +58,44 @@ struct ContentView: View {
                     }
                 }
                 
-                VStack {
-                    TabView(selection: $selectedDate) {
-                        ForEach(getAllMonthBetweenToDates(dates: calcStartAndEndDate()), id: \.self) { date in
-                            LazyVGrid(columns: Array(repeating: GridItem(.flexible()), count: 7), spacing: 50) {
-                                ForEach(fetchDaysOfMonthDates(date: date), id: \.self) { calendarDate in
-                                    if calendarDate.day == 0 {
-                                        Text("")
-                                            .font(.title2)
-                                            .fontWeight(.medium)
-                                            .frame(maxWidth: .infinity)
-                                            .foregroundColor(.primary)
-                                            .background(
-                                                
-                                            )
-                                    } else {
-                                        Text("\(calendarDate.day)")
-                                            .font(.title2)
-                                            .fontWeight(.medium)
-                                            .frame(maxWidth: .infinity)
-                                            .foregroundStyle(isSameDay(date: calendarDate.date) ? .blue : .primary)
-                                            .background(
-                                                Image(systemName: "person.2.fill")
+                TabView(selection: $selectedDate) {
+                    ForEach(getAllMonthBetweenToDates(dates: calcStartAndEndDate()), id: \.self) { date in
+                        LazyVGrid(columns: Array(repeating: GridItem(.flexible()), count: 7), spacing: 50) {
+                            ForEach(fetchDaysOfMonthDates(date: date), id: \.self) { calendarDate in
+                                if calendarDate.day == 0 {
+                                    Text("")
+                                        .font(.title2)
+                                        .fontWeight(.medium)
+                                        .frame(maxWidth: .infinity)
+                                        .foregroundColor(.primary)
+                                        .background(
+                                        )
+                                } else {
+                                    Text("\(calendarDate.day)")
+                                        .font(.title2)
+                                        .fontWeight(.medium)
+                                        .frame(maxWidth: .infinity)
+                                        .foregroundStyle(isSameDay(date: calendarDate.date) ? .blue : .primary)
+                                        .background(
+                                            Image(systemName: "person.2.fill")
                                                 .font(.title2)
                                                 .foregroundColor(.blue)
                                                 .offset(x: 0, y: 30)
-                                            )
-                                            
-                                    }
+                                        )
                                 }
                             }
-                            .tag(date)
                         }
+                        .tag(date)
+                        .padding(.bottom, 100)
                     }
-                    .frame(height: 470)
-                    .tabViewStyle(.page(indexDisplayMode: .never))
                 }
+                .tabViewStyle(.page(indexDisplayMode: .never))
+                .frame(height: 510, alignment: .top)
             }
-            
             .padding(.top)
             .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
             .padding()
         }
-        
     }
 
     func calcStartAndEndDate() -> [Date] {
@@ -151,18 +146,16 @@ struct ContentView: View {
         for _ in lastDay ..< 7 {
             calendarDates.append(CalendarDate(day: 0, date: dates.last!))
         }
-        
+
         var zeroCount = calendarDates.filter({ $0.day == 0 }).count
-        
+
         print(zeroCount)
-        
-        
-        while(zeroCount < 11) {
+
+        while zeroCount < 11 {
             calendarDates.append(CalendarDate(day: 0, date: dates.last!))
             zeroCount += 1
         }
-         
-        
+
         return calendarDates
     }
 
@@ -170,8 +163,6 @@ struct ContentView: View {
         let calendar = Calendar.current
         return calendar.isDate(date, equalTo: .now, toGranularity: .day) && calendar.isDate(date, equalTo: .now, toGranularity: .month) && calendar.isDate(date, equalTo: .now, toGranularity: .year)
     }
-    
-    
 }
 
 struct CalendarDate: Identifiable, Hashable {
