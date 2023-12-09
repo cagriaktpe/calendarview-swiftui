@@ -13,77 +13,94 @@ struct ContentView: View {
     @State private var selectedDate = Date()
 
     var body: some View {
-        VStack(spacing: 20) {
-            HStack {
-                Button(action: {
-                    selectedDate = selectedDate.addMonth(-1)
-                }, label: {
-                    Image(systemName: "chevron.left")
-                        .font(.title)
+        ScrollView {
+            VStack(spacing: 20) {
+                HStack {
+                    Button(action: {
+                        selectedDate = selectedDate.addMonth(-1)
+                    }, label: {
+                        Image(systemName: "chevron.left")
+                            .font(.title)
+                            .fontWeight(.semibold)
+                            .foregroundStyle(.blue)
+
+                    })
+                    .padding(.leading, 16)
+
+                    Spacer()
+
+                    Text(selectedDate.monthAndYear())
+                        .font(.title2)
+                        .foregroundStyle(.black)
                         .fontWeight(.semibold)
-                        .foregroundStyle(.blue)
 
-                })
-                .padding(.leading, 16)
+                    Spacer()
 
-                Spacer()
-
-                Text(selectedDate.monthAndYear())
-                    .font(.title2)
-                    .foregroundStyle(.black)
-                    .fontWeight(.semibold)
-
-                Spacer()
-
-                Button(action: {
-                    selectedDate = selectedDate.addMonth(1)
-                }, label: {
-                    Image(systemName: "chevron.right")
-                        .font(.title)
-                        .fontWeight(.semibold)
-                        .foregroundStyle(.blue)
-                })
-                .padding(.trailing, 16)
-            }
-
-            HStack {
-                ForEach(days, id: \.self) { day in
-
-                    Text(day)
-                        .font(.callout)
-                        .foregroundStyle(.gray.opacity(0.5))
-                        .fontWeight(.medium)
-                        .frame(maxWidth: .infinity)
+                    Button(action: {
+                        selectedDate = selectedDate.addMonth(1)
+                    }, label: {
+                        Image(systemName: "chevron.right")
+                            .font(.title)
+                            .fontWeight(.semibold)
+                            .foregroundStyle(.blue)
+                    })
+                    .padding(.trailing, 16)
                 }
-            }
 
-            TabView(selection: $selectedDate) {
-                ForEach(getAllMonthBetweenToDates(dates: calcStartAndEndDate()), id: \.self) { date in
-                    LazyVGrid(columns: Array(repeating: GridItem(.flexible()), count: 7), spacing: 45) {
-                        ForEach(fetchDaysOfMonthDates(date: date), id: \.self) { calendarDate in
-                            if calendarDate.day == 0 {
-                                Text("")
-                                    .font(.title2)
-                                    .fontWeight(.medium)
-                                    .frame(maxWidth: .infinity)
-                                    .foregroundColor(.primary)
-                            } else {
-                                Text("\(calendarDate.day)")
-                                    .font(.title2)
-                                    .fontWeight(.medium)
-                                    .frame(maxWidth: .infinity)
-                                    .foregroundStyle(isSameDay(date: calendarDate.date) ? .blue : .primary)
+                HStack {
+                    ForEach(days, id: \.self) { day in
+
+                        Text(day)
+                            .font(.callout)
+                            .foregroundStyle(.gray.opacity(0.5))
+                            .fontWeight(.medium)
+                            .frame(maxWidth: .infinity)
+                    }
+                }
+                
+                VStack {
+                    TabView(selection: $selectedDate) {
+                        ForEach(getAllMonthBetweenToDates(dates: calcStartAndEndDate()), id: \.self) { date in
+                            LazyVGrid(columns: Array(repeating: GridItem(.flexible()), count: 7), spacing: 50) {
+                                ForEach(fetchDaysOfMonthDates(date: date), id: \.self) { calendarDate in
+                                    if calendarDate.day == 0 {
+                                        Text("")
+                                            .font(.title2)
+                                            .fontWeight(.medium)
+                                            .frame(maxWidth: .infinity)
+                                            .foregroundColor(.primary)
+                                            .background(
+                                                
+                                            )
+                                    } else {
+                                        Text("\(calendarDate.day)")
+                                            .font(.title2)
+                                            .fontWeight(.medium)
+                                            .frame(maxWidth: .infinity)
+                                            .foregroundStyle(isSameDay(date: calendarDate.date) ? .blue : .primary)
+                                            .background(
+                                                Image(systemName: "person.2.fill")
+                                                .font(.title2)
+                                                .foregroundColor(.blue)
+                                                .offset(x: 0, y: 30)
+                                            )
+                                            
+                                    }
+                                }
                             }
+                            .tag(date)
                         }
                     }
-                    .tag(date)
+                    .frame(height: 470)
+                    .tabViewStyle(.page(indexDisplayMode: .never))
                 }
             }
-            .tabViewStyle(.page(indexDisplayMode: .never))
-            .frame(height: 450)
             
+            .padding(.top)
+            .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
+            .padding()
         }
-        .padding()
+        
     }
 
     func calcStartAndEndDate() -> [Date] {
@@ -135,7 +152,16 @@ struct ContentView: View {
             calendarDates.append(CalendarDate(day: 0, date: dates.last!))
         }
         
-        print(calendarDates)
+        var zeroCount = calendarDates.filter({ $0.day == 0 }).count
+        
+        print(zeroCount)
+        
+        
+        while(zeroCount < 11) {
+            calendarDates.append(CalendarDate(day: 0, date: dates.last!))
+            zeroCount += 1
+        }
+         
         
         return calendarDates
     }
@@ -144,6 +170,8 @@ struct ContentView: View {
         let calendar = Calendar.current
         return calendar.isDate(date, equalTo: .now, toGranularity: .day) && calendar.isDate(date, equalTo: .now, toGranularity: .month) && calendar.isDate(date, equalTo: .now, toGranularity: .year)
     }
+    
+    
 }
 
 struct CalendarDate: Identifiable, Hashable {
