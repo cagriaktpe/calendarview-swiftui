@@ -89,6 +89,9 @@ struct ContentView: View {
                         .padding(.bottom, 100)
                     }
                 }
+                .transaction { transaction in
+                                transaction.animation = nil
+                            }
                 .tabViewStyle(.page(indexDisplayMode: .never))
                 .frame(height: 510, alignment: .top)
                 
