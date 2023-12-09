@@ -11,20 +11,24 @@ struct ContentView: View {
     let days = ["SUN", "MON", "TUE", "WED", "THU", "FRI", "SAT"]
 
     @State private var selectedDate = Date()
+    
+    @State private var months: [Date] = []
+    
 
     var body: some View {
         ScrollView {
             VStack(spacing: 20) {
                 HStack {
                     Button(action: {
-                        selectedDate = selectedDate.addMonth(-1)
+                        selectedDate = Calendar.current.date(byAdding: .month, value: -1, to: selectedDate)!
+                        months = getAllMonthBetweenToDates(dates: calcStartAndEndDate())
                     }, label: {
                         Image(systemName: "chevron.left")
                             .font(.title)
                             .fontWeight(.semibold)
                             .foregroundStyle(.blue)
-
                     })
+                    
                     .padding(.leading, 16)
 
                     Spacer()
@@ -37,7 +41,8 @@ struct ContentView: View {
                     Spacer()
 
                     Button(action: {
-                        selectedDate = selectedDate.addMonth(1)
+                        selectedDate = Calendar.current.date(byAdding: .month, value: 1, to: selectedDate)!
+                        months = getAllMonthBetweenToDates(dates: calcStartAndEndDate())
                     }, label: {
                         Image(systemName: "chevron.right")
                             .font(.title)
@@ -59,7 +64,7 @@ struct ContentView: View {
                 }
                 
                 TabView(selection: $selectedDate) {
-                    ForEach(getAllMonthBetweenToDates(dates: calcStartAndEndDate()), id: \.self) { date in
+                    ForEach(months, id: \.self) { date in
                         LazyVGrid(columns: Array(repeating: GridItem(.flexible()), count: 7), spacing: 50) {
                             ForEach(fetchDaysOfMonthDates(date: date), id: \.self) { calendarDate in
                                 if calendarDate.day == 0 {
@@ -76,12 +81,7 @@ struct ContentView: View {
                                         .fontWeight(.medium)
                                         .frame(maxWidth: .infinity)
                                         .foregroundStyle(isSameDay(date: calendarDate.date) ? .blue : .primary)
-                                        .background(
-                                            Image(systemName: "person.2.fill")
-                                                .font(.title2)
-                                                .foregroundColor(.blue)
-                                                .offset(x: 0, y: 30)
-                                        )
+                                        
                                 }
                             }
                         }
@@ -91,6 +91,10 @@ struct ContentView: View {
                 }
                 .tabViewStyle(.page(indexDisplayMode: .never))
                 .frame(height: 510, alignment: .top)
+                
+            }
+            .onAppear {
+                months = getAllMonthBetweenToDates(dates: calcStartAndEndDate())
             }
             .padding(.top)
             .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .topLeading)
@@ -101,10 +105,10 @@ struct ContentView: View {
     func calcStartAndEndDate() -> [Date] {
         let calendar = Calendar.current
 
-        let threeMonthsAgo = calendar.date(byAdding: .month, value: -3, to: selectedDate)
-        let threeMonthsLater = calendar.date(byAdding: .month, value: 3, to: selectedDate)
+        let sizMonthsAgo = calendar.date(byAdding: .month, value: -6, to: selectedDate)
+        let twelveMonthsLater = calendar.date(byAdding: .month, value: 12, to: selectedDate)
 
-        return [threeMonthsAgo!, threeMonthsLater!]
+        return [sizMonthsAgo!, twelveMonthsLater!]
     }
 
     func getAllMonthBetweenToDates(dates: [Date]) -> [Date] {
@@ -177,6 +181,7 @@ struct CalendarDate: Identifiable, Hashable {
 
 extension Date {
     var year: Int { Calendar.current.component(.year, from: self) }
+    var month: Int { Calendar.current.component(.month, from: self) }
 
     func datesOfMonth() -> [Date] {
         let calendar = Calendar.current
@@ -223,4 +228,5 @@ extension Date {
         dateComponents.month = month
         return calendar.date(byAdding: dateComponents, to: self)!
     }
+    
 }
