@@ -16,7 +16,7 @@
             endingColumnNumber = "9223372036854775807"
             startingLineNumber = "145"
             endingLineNumber = "145"
-            landmarkName = "fetchDaysOfMonthDates(date:)"
+            landmarkName = "fetchDaysOfMonth(date:)"
             landmarkType = "7">
             <Locations>
                <Location

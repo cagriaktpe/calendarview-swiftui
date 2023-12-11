@@ -11,16 +11,14 @@ struct ContentView: View {
     let days = ["SUN", "MON", "TUE", "WED", "THU", "FRI", "SAT"]
 
     @State private var selectedDate = Date()
-    
     @State private var months: [Date] = []
     
-
     var body: some View {
         ScrollView {
             VStack(spacing: 20) {
                 HStack {
                     Button(action: {
-                        selectedDate = Calendar.current.date(byAdding: .month, value: -1, to: selectedDate)!
+                        selectedDate = Calendar.current.date(byAdding: .month, value: -1, to: selectedDate) ?? Date()
                         months = getAllMonthBetweenToDates(dates: calcStartAndEndDate())
                     }, label: {
                         Image(systemName: "chevron.left")
@@ -35,13 +33,13 @@ struct ContentView: View {
 
                     Text(selectedDate.monthAndYear())
                         .font(.title2)
-                        .foregroundStyle(.black)
+                        .foregroundStyle(.primary)
                         .fontWeight(.semibold)
 
                     Spacer()
 
                     Button(action: {
-                        selectedDate = Calendar.current.date(byAdding: .month, value: 1, to: selectedDate)!
+                        selectedDate = Calendar.current.date(byAdding: .month, value: 1, to: selectedDate) ?? Date()
                         months = getAllMonthBetweenToDates(dates: calcStartAndEndDate())
                     }, label: {
                         Image(systemName: "chevron.right")
@@ -66,15 +64,14 @@ struct ContentView: View {
                 TabView(selection: $selectedDate) {
                     ForEach(months, id: \.self) { date in
                         LazyVGrid(columns: Array(repeating: GridItem(.flexible()), count: 7), spacing: 50) {
-                            ForEach(fetchDaysOfMonthDates(date: date), id: \.self) { calendarDate in
+                            ForEach(fetchDaysOfMonth(date: date), id: \.self) { calendarDate in
                                 if calendarDate.day == 0 {
-                                    Text("")
+                                    Text("0")
                                         .font(.title2)
                                         .fontWeight(.medium)
                                         .frame(maxWidth: .infinity)
                                         .foregroundColor(.primary)
-                                        .background(
-                                        )
+                                        .opacity(0)
                                 } else {
                                     Text("\(calendarDate.day)")
                                         .font(.title2)
@@ -86,7 +83,7 @@ struct ContentView: View {
                             }
                         }
                         .tag(date)
-                        .padding(.bottom, 100)
+                        .padding(.bottom, 90)
                     }
                 }
                 .transaction { transaction in
@@ -108,37 +105,40 @@ struct ContentView: View {
     func calcStartAndEndDate() -> [Date] {
         let calendar = Calendar.current
 
-        let sizMonthsAgo = calendar.date(byAdding: .month, value: -6, to: selectedDate)
-        let twelveMonthsLater = calendar.date(byAdding: .month, value: 12, to: selectedDate)
+        let sizMonthsAgo = calendar.date(byAdding: .month, value: -6, to: selectedDate) ?? Date().addingTimeInterval(-1000000)
+        let twelveMonthsLater = calendar.date(byAdding: .month, value: 12, to: selectedDate) ?? Date().addingTimeInterval(1000000)
 
-        return [sizMonthsAgo!, twelveMonthsLater!]
+        return [sizMonthsAgo, twelveMonthsLater]
     }
 
     func getAllMonthBetweenToDates(dates: [Date]) -> [Date] {
-        if dates.count != 2 {
-            return []
-        }
+        guard dates.count == 2 else { return [] }
 
         let calendar = Calendar.current
-        let startDate = dates.first!
-        let endDate = dates.last!
+        
+        guard let startDate = dates.first else { return [] }
+        guard let endDate = dates.last else { return [] }
 
         var months: [Date] = []
         var currentDate = startDate
 
         while currentDate <= endDate {
             months.append(currentDate)
-            currentDate = calendar.date(byAdding: .month, value: 1, to: currentDate)!
+            currentDate = calendar.date(byAdding: .month, value: 1, to: currentDate) ?? Date()
         }
 
         return months
     }
 
-    func fetchDaysOfMonthDates(date: Date) -> [CalendarDate] {
+    func fetchDaysOfMonth(date: Date) -> [CalendarDate] {
         let calendar = Calendar.current
         let dates = date.datesOfMonth()
-        let firstDay = calendar.component(.weekday, from: dates.first!)
-        let lastDay = calendar.component(.weekday, from: dates.last!)
+        
+        guard let firstDate = dates.first else { return [] }
+        guard let lastDate = dates.last else { return [] }
+        
+        let firstDay = calendar.component(.weekday, from: firstDate)
+        let lastDay = calendar.component(.weekday, from: lastDate)
 
         var calendarDates: [CalendarDate] = []
 
@@ -153,7 +153,8 @@ struct ContentView: View {
         for _ in lastDay ..< 7 {
             calendarDates.append(CalendarDate(day: 0, date: dates.last!))
         }
-
+        
+        
         var zeroCount = calendarDates.filter({ $0.day == 0 }).count
 
         print(zeroCount)
