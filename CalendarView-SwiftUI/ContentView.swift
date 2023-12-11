@@ -62,9 +62,10 @@ struct ContentView: View {
                 }
                 
                 TabView(selection: $selectedDate) {
-                    ForEach(months, id: \.self) { date in
+                    ForEach(months.indices, id: \.self) { index in
                         LazyVGrid(columns: Array(repeating: GridItem(.flexible()), count: 7), spacing: 50) {
-                            ForEach(fetchDaysOfMonth(date: date), id: \.self) { calendarDate in
+                            ForEach(fetchDaysOfMonth(date: months[index]), id: \.self) {
+                                calendarDate in
                                 if calendarDate.day == 0 {
                                     Text("0")
                                         .font(.title2)
@@ -82,7 +83,7 @@ struct ContentView: View {
                                 }
                             }
                         }
-                        .tag(date)
+                        .tag(index)
                         .padding(.bottom, 90)
                     }
                 }
