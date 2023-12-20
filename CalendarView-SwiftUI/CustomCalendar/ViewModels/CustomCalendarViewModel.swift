@@ -14,6 +14,8 @@ class CustomCalendarViewModel: ObservableObject {
     let columns = Array(repeating: GridItem(.flexible()), count: 7)
     
     @Published var selectedDate = Date()
+    @Published var calendarEndDate = Date().addingTimeInterval(1000000)
+    @Published var calendarStartDate = Date().addingTimeInterval(-1000000)
     @Published var months: [Date] = []
     
     init() {
@@ -21,22 +23,28 @@ class CustomCalendarViewModel: ObservableObject {
     }
     
     func nextMonth() {
+        if selectedDate.monthAndYear() == calendarEndDate.monthAndYear() {
+            return
+        }
         selectedDate = Calendar.current.date(byAdding: .month, value: 1, to: selectedDate) ?? Date()
-        updateMonths()
+        
     }
     
     func previousMonth() {
+        if selectedDate.monthAndYear() == calendarStartDate.monthAndYear() {
+            return
+        }
         selectedDate = Calendar.current.date(byAdding: .month, value: -1, to: selectedDate) ?? Date()
-        updateMonths()
+       
     }
     
     func calcStartAndEndDate() -> [Date] {
         let calendar = Calendar.current
 
-        let sizMonthsAgo = calendar.date(byAdding: .month, value: -6, to: selectedDate) ?? Date().addingTimeInterval(-1000000)
-        let twelveMonthsLater = calendar.date(byAdding: .month, value: 12, to: selectedDate) ?? Date().addingTimeInterval(1000000)
+        calendarStartDate = calendar.date(byAdding: .month, value: -6, to: selectedDate) ?? Date().addingTimeInterval(-1000000)
+        calendarEndDate = calendar.date(byAdding: .month, value: 12, to: selectedDate) ?? Date().addingTimeInterval(1000000)
 
-        return [sizMonthsAgo, twelveMonthsLater]
+        return [calendarStartDate, calendarEndDate]
     }
 
     func getAllMonthBetweenTwoDates(dates: [Date]) -> [Date] {
@@ -84,8 +92,6 @@ class CustomCalendarViewModel: ObservableObject {
         
         
         var zeroCount = calendarDates.filter({ $0.day == 0 }).count
-
-        print(zeroCount)
 
         while zeroCount < 11 {
             calendarDates.append(CalendarDate(day: 0, date: dates.last!))
