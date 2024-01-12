@@ -9,14 +9,14 @@ import SwiftUI
 
 struct CustomCalendarView: View {
     
-    @StateObject private var viewModel = CustomCalendarViewModel()
+    @StateObject var viewModel = CustomCalendarViewModel()
     
     var body: some View {
         ScrollView {
             VStack(spacing: 20) {
                 HStack {
                     Button(action: {
-                        withAnimation {
+                        withAnimation(.spring) {
                             viewModel.previousMonth()
                         }
                     }, label: {
@@ -34,11 +34,12 @@ struct CustomCalendarView: View {
                         .font(.title2)
                         .foregroundStyle(.primary)
                         .fontWeight(.semibold)
+                        .animation(nil, value: viewModel.selectedDate)
 
                     Spacer()
 
                     Button(action: {
-                        withAnimation {
+                        withAnimation(.spring) {
                             viewModel.nextMonth()
                         }
                     }, label: {
@@ -63,10 +64,11 @@ struct CustomCalendarView: View {
                 
                 TabView(selection: $viewModel.selectedDate) {
                     ForEach(viewModel.months, id: \.self) { month in
-                        MonthView(month: month)
+                        MonthView(viewModel: viewModel, month: month)
                             .tag(month)
                     }
                 }
+                .transition(.slide)
                 .tabViewStyle(PageTabViewStyle(indexDisplayMode: .never))
                 .frame(height: 420)
                 

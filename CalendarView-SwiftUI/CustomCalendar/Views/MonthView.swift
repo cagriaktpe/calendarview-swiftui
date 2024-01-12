@@ -9,7 +9,7 @@ import SwiftUI
 
 struct MonthView: View {
     
-    @StateObject private var viewModel = CustomCalendarViewModel()
+    @ObservedObject var viewModel: CustomCalendarViewModel
     let month: Date
     
     var body: some View {
@@ -35,6 +35,8 @@ struct MonthView: View {
     }
 }
 
+/*
 #Preview {
     MonthView(month: Date())
 }
+*/
